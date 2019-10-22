@@ -13,7 +13,7 @@ CURRENT_DIR = os.getcwd()
 DATA_FILE = 'data.json'
 COMMAND_FILE = 'cmd.txt'
 FILE_DATA = os.path.join(CURRENT_DIR, DATA_FILE)
-FILE_COMMAND = os.path.join(CURRENT_DIR, COMMAND_FILE)
+FILE_COMMAND = os.path.join(CURRENT_DIR, __file__)
 # Extracts the first three characters from the version output e.g 3.5
 PY_VERSION = sys.version[:3]
 try:

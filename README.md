@@ -1,6 +1,6 @@
 #### Battery-Monitor for Linux
 
-This currently works on Python 3 but should work on Python 2(**not tested**)
+This currently works on Python 3
 
 To use:
 
