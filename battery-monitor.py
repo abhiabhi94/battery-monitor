@@ -13,7 +13,8 @@ CURRENT_DIR = os.getcwd()
 DATA_FILE = 'data.json'
 COMMAND_FILE = 'cmd.txt'
 FILE_DATA = os.path.join(CURRENT_DIR, DATA_FILE)
-FILE_COMMAND = os.path.join(CURRENT_DIR, __file__)
+FILE_COMMAND = os.path.join(CURRENT_DIR, COMMAND_FILE)
+STARTUP_CMD = os.path.join(CURRENT_DIR, __file__)
 # Extracts the first three characters from the version output e.g 3.5
 PY_VERSION = sys.version[:3]
 try:
@@ -22,8 +23,8 @@ try:
 except FileNotFoundError:
     with open(FILE_COMMAND, 'w') as f:
         # f.write(f'python{PY_VERSION} {FILE_COMMAND}')
-        f.write('python{} {}'.format(PY_VERSION, FILE_COMMAND))
-# sys.exit(sys.argv[0])
+        f.write('python{} {}'.format(PY_VERSION, STARTUP_CMD))
+
 last_state = None
 last_status = None
 state = {}
