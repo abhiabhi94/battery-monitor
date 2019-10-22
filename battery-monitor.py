@@ -14,12 +14,15 @@ DATA_FILE = 'data.json'
 COMMAND_FILE = 'cmd.txt'
 FILE_DATA = os.path.join(CURRENT_DIR, DATA_FILE)
 FILE_COMMAND = os.path.join(CURRENT_DIR, COMMAND_FILE)
+# Extracts the first three characters from the version output e.g 3.5
+PY_VERSION = sys.version[:3]
 try:
     with open(FILE_COMMAND, 'r') as f:
         pass
 except FileNotFoundError:
     with open(FILE_COMMAND, 'w') as f:
-        f.write('python ' + sys.argv[0])
+        # f.write(f'python{PY_VERSION} {FILE_COMMAND}')
+        f.write('python{} {}'.format(PY_VERSION, FILE_COMMAND))
 # sys.exit(sys.argv[0])
 last_state = None
 last_status = None
@@ -119,7 +122,7 @@ if __name__ == "__main__":
             # sys.exit(content)
             notify_status = content['notify_values']
     except FileNotFoundError:
-        with open(FILE_DATA, 'w') as f:
+        with open(FILE_DATA, 'w', encoding='utf-8') as f:
             notify_status = [int(i) for i in sys.argv[1:]]
             if False in [False for i in notify_status if i < 0 or i > 100]:
                 sys.exit('Percentages should be between 0 and 100')
@@ -127,8 +130,9 @@ if __name__ == "__main__":
                 notify_status = [50, 30, 10, 5]
             notify_values = {}
             notify_values['notify_values'] = notify_status
-            json.dump(notify_values, f)
-        print("You will get notified when your battery percentage is: ", notify_status)
-        run_job(notify_status)
+            json.dump(notify_values, f, ensure_ascii=False, indent=4)
     except ValueError:
         print('Please give percentages when you want notifications as arguments in integer format separated by space')
+
+    print("You will get notified when your battery percentage is: ", notify_status)
+    run_job(notify_status)

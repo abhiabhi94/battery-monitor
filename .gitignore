@@ -3,3 +3,7 @@
 # VS Code Directory #
 ########################
 *.vscode
+
+# cmd.txt and data.json #
+cmd.txt
+data.json
