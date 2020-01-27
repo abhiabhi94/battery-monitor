@@ -9,14 +9,12 @@ import json
 COMMAND = 'acpi'
 INTERVAL = 1  # the time for which the function stops
 
-# BASE_DIR = BASE_DIR = os.path.dirname(
-#     os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-CURRENT_DIR = os.getcwd()
-DATA_FILE = os.path.join(CURRENT_DIR, 'data.json')
-CMD_FILE = os.path.join(CURRENT_DIR, 'cmd.txt')
-SOUND_FILE = os.path.join(CURRENT_DIR, os.path.join('sounds', 'beep4.wav'))
-STARTUP_CMD = os.path.join(CURRENT_DIR, __file__)
+DATA_FILE = os.path.join(BASE_DIR, 'data.json')
+CMD_FILE = os.path.join(BASE_DIR, 'cmd.txt')
+SOUND_FILE = os.path.join(BASE_DIR, os.path.join('sounds', 'beep4.wav'))
+STARTUP_CMD = os.path.join(BASE_DIR, __file__)
 
 # Extracts the first three characters from the version output e.g 3.5
 PY_VERSION = sys.version[:3]
