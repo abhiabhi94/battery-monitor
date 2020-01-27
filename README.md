@@ -10,7 +10,9 @@ To use:
 
 ```python
 python battery-monitor.py # In case you want the notifications for default values(50, 30, 10, 5).
-python battery-monitor.py X Y Z # In case you want notification when battery is at X%, Y%, Z%, you can give as many values as you wish
+python battery-monitor.py -n X Y Z # In case you want notification when battery is at X%, Y%, Z%, you can give as many values as you wish
+python battery-monitor.py -s # In case you want a beep sound alongside the visual notification
+python battery-monitory.py -h # This will give you all the information required to run the file
 ```
 
 - Stop the program using `Keyboard Interrupt`(`Ctrl+C`)
@@ -18,3 +20,5 @@ python battery-monitor.py X Y Z # In case you want notification when battery is 
 - To make this program a part of `startup application` `search` `startup application` on your machine and add the contents of the `file` `cmd.txt`(inside the directory where you cloned this).
 
 - To make changes to the percentages when you want notification, you can just edit the file `data.json` (inside the directory where you cloned this) appropriately.
+
+- Thanks to the creator of the beep sound which was picked up from https://freesound.org/people/thisusernameis/sounds/426888/
