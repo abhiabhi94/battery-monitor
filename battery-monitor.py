@@ -15,17 +15,8 @@ DATA_FILE = os.path.join(BASE_DIR, 'data.json')
 CMD_FILE = os.path.join(BASE_DIR, 'cmd.txt')
 SOUND_FILE = os.path.join(BASE_DIR, os.path.join('sounds', 'beep4.wav'))
 STARTUP_CMD = os.path.join(BASE_DIR, __file__)
-
-# Extracts the first three characters from the version output e.g 3.5
-PY_VERSION = sys.version[:3]
-
-try:
-    with open(CMD_FILE, 'r') as cmd_file:
-        pass
-except FileNotFoundError:
-    with open(CMD_FILE, 'w') as cmd_file:
-        # f.write(f'python{PY_VERSION} {CMD_FILE}')
-        cmd_file.write('python{} {}'.format(PY_VERSION, STARTUP_CMD))
+CMD_FILE = os.path.join(BASE_DIR, 'cmd.txt')
+STARTUP_CMD = os.path.join(BASE_DIR, __file__)
 
 DEFAULT_STATUS = [50, 30, 10, 5]
 BATTERY_VALS = 'battery-values'
@@ -37,6 +28,103 @@ state = {}
 status = {}
 # state['change'] = False
 # status['change'] = False
+
+
+def parse_args():
+    """
+    Parse and returns the command line arguments
+
+    Returns
+        args
+    """
+
+    parser = argparse.ArgumentParser(description="""
+        Notify me at the when the battery reaches certain stages or 
+        when a charger is plugged or unplugged
+        \nBy default: you will get notification when the battery reaches the percentages
+        {} alongwith no sound.
+        \nExample:
+        If you want default options,
+        use:    python3 battery-monitor.py
+        \nIn case you want, sound alongside visual notification,
+        use:    python3 battery-monitor.py -s
+        \nIf you want notification when the battery is at a stage (5, 10, 100),
+        use:    python3 battery-monitor.py -n 5 10 100
+        """.format(DEFAULT_STATUS),
+        formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('-n', '--notify', default=DEFAULT_STATUS, nargs='+',
+                        type=int,
+                        help="""Comma seperated values when you want notification
+                            Note: Enter only integer values""")
+    parser.add_argument('-s', '--sound', default=False, action='store_true',
+                        help='Display notification along with a sound')
+    return parser.parse_args()
+
+
+def write_command_to_file(choices):
+    """
+    Write the command to be executed to a file for the program
+     to operate in the background.
+
+    Returns
+        None
+
+    Params
+        choices: str
+        All the choices entered by the user.
+    """
+
+    # Extracts the first three characters from the version output e.g 3.5
+    PY_VERSION = sys.version[:3]
+
+    with open(CMD_FILE, 'w') as cmd_file:
+        # f.write(f'python{PY_VERSION} {CMD_FILE}')
+        cmd_file.write('python{} {}{}'.format(
+            PY_VERSION, STARTUP_CMD, choices))
+
+
+def make_cli_options(notify_status, sound_flag):
+    """
+    Returns
+        choices: str
+            Compatible for writing command to the text file
+            so that they may be passed to the CLI
+
+    Params
+        notify_status:list
+            The list of values for which notification will be provided
+
+        sound_flag:bool
+            Whether sound choice was used or not
+    """
+
+    choices = ' -n '
+
+    for val in notify_status:
+        choices += str(val) + ' '
+    if sound_flag:
+        choices += '-s'
+
+    return choices
+
+
+def prepocess_notify_args(val):
+    """
+    Returns:
+        val: list
+            The list of arguments for notification after
+             they have been converted to integer format
+
+    Params:
+        val: list
+            The list of arguments passed to the -n option on the CLI
+    """
+    val = [int(i) for i in val]
+
+    if False in [False for i in val if i < 0 or i > 100]:
+        sys.exit('Percentages should be between 0 and 100')
+
+    return val
 
 
 # def has_changed(current_val):
@@ -177,55 +265,17 @@ def main():
     Returns
         None
     """
-    try:
-        with open(DATA_FILE, 'r') as data_file:
-            content = json.load(data_file)
-            # sys.exit(content)
-            notify_status = content[BATTERY_VALS]
-            sound_flag = content[SOUND]
+    args = parse_args()
 
-    except FileNotFoundError:
-        # This part will be executed when running for the first time
-        # if correct arguments are passed
+    notify_status = prepocess_notify_args(args.notify)
 
-        parser = argparse.ArgumentParser(description=f"""
-        Notify me at the when the battery reaches certain stages or 
-        when a charger is plugged or unplugged
-        \nBy default: you will get notification when the battery reaches the percentages
-        {DEFAULT_STATUS} alongwith no sound.
-        \nExample:
-        If you want default options,
-        use:    python3 battery-monitor.py
-        \nIn case you want, sound alongside visual notification,
-        use:    python3 battery-monitor.py -s
-        \nIf you want notification when the battery is at a stage (5, 10, 100),
-        use:    python3 battery-monitor.py -n 5 10 100
-        """,
-                                         formatter_class=argparse.RawDescriptionHelpFormatter)
-        parser.add_argument('-n', '--notify', default=DEFAULT_STATUS, nargs='+',
-                            type=int,
-                            help="""Comma seperated values when you want notification
-                            Note: Enter only integer values""")
-        parser.add_argument('-s', '--sound', default=False, action='store_true',
-                            help='Display notification along with a sound')
-        args = parser.parse_args()
-        notify_status = [int(i) for i in args.notify]
-        # print('Notify values>>>>>', notify_status)
-        sound_flag = args.sound
-        # print('Sound flag>>>>>', sound_flag)
-        if False in [False for i in notify_status if i < 0 or i > 100]:
-            sys.exit('Percentages should be between 0 and 100')
+    choices = make_cli_options(notify_status, args.sound)
 
-        notify_values = {}
-        notify_values[BATTERY_VALS] = notify_status
-        notify_values[SOUND] = sound_flag
+    write_command_to_file(choices)
 
-        with open(DATA_FILE, 'w', encoding='utf-8') as data_file:
-            json.dump(notify_values, data_file, ensure_ascii=False, indent=4)
+    print("You will get notified when your battery percentage is: ", notify_status)
 
-        print("You will get notified when your battery percentage is: ", notify_status)
-
-    run_job(notify_status, sound_flag)
+    run_job(notify_status, args.sound)
 
 
 if __name__ == "__main__":
