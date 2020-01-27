@@ -19,6 +19,7 @@ python battery-monitory.py -h # This will give you all the information required 
 
 - To make this program a part of `startup application` `search` `startup application` on your machine and add the contents of the `file` `cmd.txt`(inside the directory where you cloned this).
 
-- To make changes to the percentages when you want notification, you can just edit the file `data.json` (inside the directory where you cloned this) appropriately.
+- To make changes to the percentages when you want notification, you may run the command again with the arguments of your choice or maybe edit the file `cmd.txt` (inside the directory where you cloned this) appropriately.
+**Note**: In this case you will also have to change the contents of the command that you passed to the startup application.
 
 - Thanks to the creator of the beep sound which was picked up from https://freesound.org/people/thisusernameis/sounds/426888/
