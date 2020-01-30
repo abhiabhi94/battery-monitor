@@ -39,7 +39,7 @@ def parse_args():
     """
 
     parser = argparse.ArgumentParser(description="""
-        Notify me at the when the battery reaches certain stages or 
+        Notify me at the when the battery reaches certain stages or
         when a charger is plugged or unplugged
         \nBy default: you will get notification when the battery reaches the percentages
         {} alongwith no sound.
@@ -56,8 +56,11 @@ def parse_args():
                         type=int,
                         help="""Comma seperated values when you want notification
                             Note: Enter only integer values""")
+    parser.add_argument('-d', '--notify-on-discharge', default=False, action='store_true',
+                        help='Display notification along with a sound')
     parser.add_argument('-s', '--sound', default=False, action='store_true',
                         help='Display notification along with a sound')
+
     return parser.parse_args()
 
 
@@ -83,7 +86,7 @@ def write_command_to_file(choices):
             PY_VERSION, STARTUP_CMD, choices))
 
 
-def make_cli_options(notify_status, sound_flag):
+def make_cli_options(notify_status, sound_flag, notify_on_discharge_flag):
     """
     Returns
         choices: str
@@ -91,11 +94,12 @@ def make_cli_options(notify_status, sound_flag):
             so that they may be passed to the CLI
 
     Params
-        notify_status:list
+        notify_status: list
             The list of values for which notification will be provided
-
-        sound_flag:bool
+        sound_flag: bool
             Whether sound choice was used or not
+        notify_on_discharge_flag: bool
+            Keep notifing when battery is discharging.
     """
 
     choices = ' -n '
@@ -103,7 +107,9 @@ def make_cli_options(notify_status, sound_flag):
     for val in notify_status:
         choices += str(val) + ' '
     if sound_flag:
-        choices += '-s'
+        choices += '-s '
+    if notify_on_discharge_flag:
+        choices += '-d'
 
     return choices
 
@@ -232,7 +238,21 @@ def get_battery_info(sound_flag):
     return state, status, time_left, dest
 
 
-def run_job(notify_status, sound_flag):
+def notify_required(*args):
+    """
+    Returns: bool
+        Whether the boolean product of all conditions is true or not
+
+    Param: arguments
+        Note: all arguments need to be boolean for them to be processed well.
+    """
+    result = False
+    for arg in args:
+        result = result or arg
+    return result
+
+
+def run_job(notify_status, sound_flag, notify_on_discharge_flag):
     """
     Runs the job for notifying the information about battery
     Returns
@@ -243,6 +263,8 @@ def run_job(notify_status, sound_flag):
             The list containing integer values for which notification will be given.
         sound_flag: bool
             Whether sound is asked alongwith visual notification.
+        notify_on_discharge_flag: bool
+            Whether continous notification is required when battery is not charged.
     """
     while True:
         result = get_battery_info(sound_flag)
@@ -251,7 +273,16 @@ def run_job(notify_status, sound_flag):
             # notification = f'Battery {state['val']}, {status['val']}%, {time_left} {dest}'
             notification = 'Battery {}, {}%, {} {}'.format(
                 state['val'], status['val'], time_left, dest)
-            if has_state_changed(state['val']) or (status['val'] in notify_status and has_status_changed(status['val'])):
+
+            # Keep notifying if it is asked when battery is discharging
+            # Notify once when there is a change in battery state(charging -> discharging)
+            # Notify once if the state(current battery percentage) is among the values requested for
+            if notify_required(notify_on_discharge_flag,
+                               has_state_changed(state['val']),
+                               status['val'] in notify_status and has_status_changed(status['val'])):
+                # if (notify_on_discharge_flag) or
+                # (has_state_changed(state['val'])) or
+                # (status['val'] in notify_status and has_status_changed(status['val'])):
                 # if has_changed(state['val']) or (status['val'] in notify_status and has_changed(status['val'])):
                 notify(notification, sound_flag)
         sleep(INTERVAL)
@@ -269,13 +300,15 @@ def main():
 
     notify_status = prepocess_notify_args(args.notify)
 
-    choices = make_cli_options(notify_status, args.sound)
+    choices = make_cli_options(notify_status, args.sound,
+                               args.notify_on_discharge)
 
     write_command_to_file(choices)
+    print('Notify_flag:', args.notify_on_discharge)
 
     print("You will get notified when your battery percentage is: ", notify_status)
 
-    run_job(notify_status, args.sound)
+    run_job(notify_status, args.sound, args.notify_on_discharge)
 
 
 if __name__ == "__main__":
