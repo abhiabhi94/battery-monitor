@@ -12,6 +12,7 @@ To use:
 python battery-monitor.py # In case you want the notifications for default values(50, 30, 10, 5).
 python battery-monitor.py -n X Y Z # In case you want notification when battery is at X%, Y%, Z%, you can give as many values as you wish
 python battery-monitor.py -s # In case you want a beep sound alongside the visual notification
+python battery-monitor.py -d # In case you want a contionous notification when the battery is discharging.(extremely useful for people with faulty batteries)
 python battery-monitory.py -h # This will give you all the information required to run the file
 ```
 
