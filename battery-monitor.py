@@ -15,8 +15,6 @@ DATA_FILE = os.path.join(BASE_DIR, 'data.json')
 CMD_FILE = os.path.join(BASE_DIR, 'cmd.txt')
 SOUND_FILE = os.path.join(BASE_DIR, os.path.join('sounds', 'beep4.wav'))
 STARTUP_CMD = os.path.join(BASE_DIR, __file__)
-CMD_FILE = os.path.join(BASE_DIR, 'cmd.txt')
-STARTUP_CMD = os.path.join(BASE_DIR, __file__)
 
 DEFAULT_STATUS = [50, 30, 10, 5]
 BATTERY_VALS = 'battery-values'
