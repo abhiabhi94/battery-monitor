@@ -275,7 +275,7 @@ def run_job(notify_status, sound_flag, notify_on_discharge_flag):
             # Keep notifying if it is asked when battery is discharging
             # Notify once when there is a change in battery state(charging -> discharging)
             # Notify once if the state(current battery percentage) is among the values requested for
-            if notify_required(notify_on_discharge_flag,
+            if notify_required(notify_on_discharge_flag and state['val'].lower() == 'discharging',
                                has_state_changed(state['val']),
                                status['val'] in notify_status and has_status_changed(status['val'])):
                 # if (notify_on_discharge_flag) or
@@ -302,7 +302,6 @@ def main():
                                args.notify_on_discharge)
 
     write_command_to_file(choices)
-    print('Notify_flag:', args.notify_on_discharge)
 
     print("You will get notified when your battery percentage is: ", notify_status)
 
