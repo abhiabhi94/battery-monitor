@@ -11,7 +11,6 @@ INTERVAL = 1  # the time for which the function stops
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-DATA_FILE = os.path.join(BASE_DIR, 'data.json')
 CMD_FILE = os.path.join(BASE_DIR, 'cmd.txt')
 SOUND_FILE = os.path.join(BASE_DIR, os.path.join('sounds', 'beep4.wav'))
 STARTUP_CMD = os.path.join(BASE_DIR, __file__)
