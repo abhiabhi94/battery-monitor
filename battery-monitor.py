@@ -11,7 +11,6 @@ INTERVAL = 1  # the time for which the function stops
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-DATA_FILE = os.path.join(BASE_DIR, 'data.json')
 CMD_FILE = os.path.join(BASE_DIR, 'cmd.txt')
 SOUND_FILE = os.path.join(BASE_DIR, os.path.join('sounds', 'beep4.wav'))
 STARTUP_CMD = os.path.join(BASE_DIR, __file__)
@@ -52,12 +51,20 @@ def parse_args():
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('-n', '--notify', default=DEFAULT_STATUS, nargs='+',
                         type=int,
-                        help="""Comma seperated values when you want notification
-                            Note: Enter only integer values""")
+                        help="""
+                        Comma seperated values when you want notification
+                        Note: Enter only integer values
+                        """
+                        )
     parser.add_argument('-d', '--notify-on-discharge', default=False, action='store_true',
-                        help='Display notification along with a sound')
+                        help="""
+                        Keep notifying when the battery is in discharing.
+                        Note: Use this only if you have a faulty battery and need\
+                            continuous reminders when your charger is removed.
+                        """
+                        )
     parser.add_argument('-s', '--sound', default=False, action='store_true',
-                        help='Display notification along with a sound')
+                        help='Play sound alongside a notification')
 
     return parser.parse_args()
 
